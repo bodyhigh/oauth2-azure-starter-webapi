@@ -10,21 +10,20 @@ namespace oauth2_azure_starter_webapi.Controllers.User
     [ApiController]
     public class UserController : ControllerBase
     {
-        // private readonly ILogger logger;
+        private readonly ILogger logger;
 
-        // public UserController(ILogger logger)
-        // {
-        //     this.logger = logger;
-        // }
+        public UserController(ILogger<UserController> logger)
+        {
+            this.logger = logger;
+        }
 
         // GET: api/<UserController>/Profile/291917CA-5F31-4BAB-B3A5-69B41F2B97E6
         [HttpGet("[action]/{id:Guid}")]
         [Produces(MediaTypeNames.Application.Json)]
         public ProfileModel Profile(Guid id)
         {
-            // this.logger.LogWarning($"TEST WARNING {id}");
+            this.logger.LogWarning($"TEST WARNING: GET: api/UserController/Profile/{id}");
 
-            //9A41A305-19EA-4FE6-BAFD-A28DF8CBDF1A
             return new ProfileModel()
             {
                 Id = id,

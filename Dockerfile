@@ -12,7 +12,7 @@ FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS final
 WORKDIR /app
 COPY --from=build /app ./
 
-EXPOSE 80
-EXPOSE 443
+# EXPOSE 80
+# EXPOSE 443
 
 ENTRYPOINT ["dotnet", "oauth2-azure-starter-webapi.dll"]
