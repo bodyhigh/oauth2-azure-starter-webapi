@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using oauth2_azure_starter_models.Models.User;
 using System.Net.Mime;
 
@@ -8,6 +9,7 @@ namespace oauth2_azure_starter_webapi.Controllers.User
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class UserController : ControllerBase
     {
         private readonly ILogger logger;
