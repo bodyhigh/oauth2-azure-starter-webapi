@@ -1,13 +1,17 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Identity.Web;
+using Microsoft.IdentityModel.Logging;
 
 var builder = WebApplication.CreateBuilder(args);
+//ILogger logger;
 
 // Add Logging
 builder.Host.ConfigureLogging(logging => {
     logging.ClearProviders();
     logging.AddConsole();
 });
+
+//logger = context.HttpContext.RequestServices.
 
 // Add services to the container.
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -21,11 +25,11 @@ builder.Services.AddControllers()
 
         options.InvalidModelStateResponseFactory = context =>
         {
-            var logger = context.HttpContext.RequestServices
+            var _logger = context.HttpContext.RequestServices
                                 .GetRequiredService<ILogger<Program>>();
 
             // Perform logging here.
-            logger.LogError($"Errors found: {context.ModelState.ErrorCount}");
+            _logger.LogError($"Errors found: {context.ModelState.ErrorCount}");
 
             // Invoke the default behavior, which produces a ValidationProblemDetails
             // response.
@@ -45,6 +49,7 @@ app.MapHealthChecks("/health");
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
+    IdentityModelEventSource.ShowPII = app.Environment.IsDevelopment();
     app.UseSwagger();
     app.UseSwaggerUI();
 }
@@ -56,7 +61,26 @@ else
 
 app.UseHttpsRedirection();
 
+//app.UseRouting();
+
 app.UseAuthentication();
+//app.Use(async (context, next) =>
+//{
+//    var _logger = context.RequestServices.GetRequiredService<ILogger<Program>>();
+
+//    // Perform logging here.
+//    var keys = context.Request.Headers.Keys.ToList();
+//    _logger.LogInformation($"REQUEST HEADER KEYS: {string.Join(", ", keys)}");
+//    _logger.LogInformation($"Authorization: {string.Join(", ", context.Request.Headers["Authorization"].ToList())}");
+
+//    if (!context.User.Identity?.IsAuthenticated ?? false)
+//    {
+//        context.Response.StatusCode = 401;
+//        await context.Response.WriteAsync("Not Authenticated");
+//    }
+//    else await next();
+//});
+
 app.UseAuthorization();
 
 app.MapControllers();

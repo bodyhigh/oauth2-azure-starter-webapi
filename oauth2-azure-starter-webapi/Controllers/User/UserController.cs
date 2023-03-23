@@ -19,12 +19,12 @@ namespace oauth2_azure_starter_webapi.Controllers.User
             this.logger = logger;
         }
 
-        // GET: api/<UserController>/Profile/291917CA-5F31-4BAB-B3A5-69B41F2B97E6
-        [HttpGet("[action]/{id:Guid}")]
+        // GET: api/<UserController>/291917CA-5F31-4BAB-B3A5-69B41F2B97E6/Profile
+        [HttpGet("{id:Guid}/[action]")]
         [Produces(MediaTypeNames.Application.Json)]
         public ProfileModel Profile(Guid id)
         {
-            this.logger.LogWarning($"TEST WARNING: GET: api/UserController/Profile/{id}");
+            this.logger.LogWarning($"TEST WARNING: GET: api/User/{id}/Profile");
 
             return new ProfileModel()
             {
