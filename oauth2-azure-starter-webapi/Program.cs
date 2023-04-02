@@ -3,6 +3,12 @@ using Microsoft.Identity.Web;
 using Microsoft.IdentityModel.Logging;
 
 var builder = WebApplication.CreateBuilder(args);
+var azureConfig = builder.Configuration.GetSection("AzureAD");
+
+if (azureConfig == null)
+{
+    var error = "Azure Configuration Not Found";
+}
 //ILogger logger;
 
 // Add Logging
@@ -11,11 +17,12 @@ builder.Host.ConfigureLogging(logging => {
     logging.AddConsole();
 });
 
+var something = new ServiceCollection();
 //logger = context.HttpContext.RequestServices.
 
 // Add services to the container.
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddMicrosoftIdentityWebApi(builder.Configuration.GetSection("AzureAD"));
+    .AddMicrosoftIdentityWebApi(azureConfig!);
 
 builder.Services.AddControllers()
     .ConfigureApiBehaviorOptions(options =>
