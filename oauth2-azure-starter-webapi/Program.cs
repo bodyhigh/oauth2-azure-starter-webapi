@@ -3,26 +3,25 @@ using Microsoft.Identity.Web;
 using Microsoft.IdentityModel.Logging;
 
 var builder = WebApplication.CreateBuilder(args);
-var azureConfig = builder.Configuration.GetSection("AzureAD");
-
-if (azureConfig == null)
-{
-    var error = "Azure Configuration Not Found";
-}
-//ILogger logger;
 
 // Add Logging
-builder.Host.ConfigureLogging(logging => {
-    logging.ClearProviders();
-    logging.AddConsole();
-});
+var logger = LoggerFactory.Create(config =>
+{
+    //config.ClearProviders();
+    config.AddConsole();
+    config.AddConfiguration(builder.Configuration.GetSection("Logging"));
+}).CreateLogger("Program");
 
-var something = new ServiceCollection();
-//logger = context.HttpContext.RequestServices.
+
+var azureADConfig = builder.Configuration.GetSection("AzureAD");
+if (azureADConfig == null)
+{
+    logger.LogError("Azure Configuration Not Found");
+}
 
 // Add services to the container.
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddMicrosoftIdentityWebApi(azureConfig!);
+    .AddMicrosoftIdentityWebApi(azureADConfig!);
 
 builder.Services.AddControllers()
     .ConfigureApiBehaviorOptions(options =>
@@ -32,11 +31,8 @@ builder.Services.AddControllers()
 
         options.InvalidModelStateResponseFactory = context =>
         {
-            var _logger = context.HttpContext.RequestServices
-                                .GetRequiredService<ILogger<Program>>();
-
             // Perform logging here.
-            _logger.LogError($"Errors found: {context.ModelState.ErrorCount}");
+            logger.LogError($"Errors found: {context.ModelState.ErrorCount}");
 
             // Invoke the default behavior, which produces a ValidationProblemDetails
             // response.
@@ -67,18 +63,14 @@ else
 }
 
 app.UseHttpsRedirection();
-
-//app.UseRouting();
-
 app.UseAuthentication();
+
 //app.Use(async (context, next) =>
 //{
-//    var _logger = context.RequestServices.GetRequiredService<ILogger<Program>>();
-
-//    // Perform logging here.
+//    // Debugging request header
 //    var keys = context.Request.Headers.Keys.ToList();
-//    _logger.LogInformation($"REQUEST HEADER KEYS: {string.Join(", ", keys)}");
-//    _logger.LogInformation($"Authorization: {string.Join(", ", context.Request.Headers["Authorization"].ToList())}");
+//    logger.LogInformation($"REQUEST HEADER KEYS: {string.Join(", ", keys)}");
+//    logger.LogInformation($"Authorization: {string.Join(", ", context.Request.Headers["Authorization"].ToList())}");
 
 //    if (!context.User.Identity?.IsAuthenticated ?? false)
 //    {
@@ -89,7 +81,5 @@ app.UseAuthentication();
 //});
 
 app.UseAuthorization();
-
 app.MapControllers();
-
 app.Run();
