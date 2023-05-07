@@ -1,7 +1,7 @@
 # oauth2-azure-starter-webapi
 
 ## Secrets
-==secret.json== file
+**secret.json** file
 ```
 {
   "AzureAD": {
