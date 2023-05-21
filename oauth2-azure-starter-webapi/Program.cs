@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Identity.Web;
 using Microsoft.IdentityModel.Logging;
 
+var AllowSpecificArigins = "_allowSpecificArigins";
 var builder = WebApplication.CreateBuilder(args);
 
 // Add Logging
@@ -11,6 +12,16 @@ var logger = LoggerFactory.Create(config =>
     config.AddConsole();
     config.AddConfiguration(builder.Configuration.GetSection("Logging"));
 }).CreateLogger("Program");
+
+builder.Services.AddCors(options => 
+{
+    options.AddPolicy(name: AllowSpecificArigins, policy => 
+    {
+        policy.WithOrigins("https://localhost:4200")
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+    });
+});
 
 
 var azureADConfig = builder.Configuration.GetSection("AzureAD");
@@ -63,6 +74,8 @@ else
 }
 
 app.UseHttpsRedirection();
+app.UseRouting();
+app.UseCors(AllowSpecificArigins);
 app.UseAuthentication();
 
 //app.Use(async (context, next) =>
